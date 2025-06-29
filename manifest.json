@@ -14,8 +14,6 @@
         "icons/settings.png",
         "prepare_upload.bat",
         "requirements.txt",
-        "version.info",
-        "新文字文件.txt",
-        "準備上傳檔案.txt"
+        "version.info"
     ]
 }

@@ -145,7 +145,7 @@ class DMChatWindow(tk.Toplevel):
 class ChannelViewer:
     def __init__(self, master):
         self.master = master
-        self.master.title("伊布7專用 GUI 管理工具 v3.1 (Modern Fixed)")
+        self.master.title("Discord機器人專用 GUI 管理工具 v3.0.1")
         self.master.geometry("1400x950")
         self.master.minsize(1200, 800)
 
