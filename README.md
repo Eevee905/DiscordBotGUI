@@ -55,7 +55,7 @@
 4.  **執行主程式**
     一切準備就緒後，執行主程式即可：
     ```bash
-    python bot_open_GUI_v3.py
+    python bot_GUI.py
     ```
 
 ## 🔄 如何更新
@@ -68,7 +68,7 @@
     ```
 2.  更新程式會自動檢查是否有新版本。
 3.  如果發現新版本，點擊「立即更新」按鈕即可。
-4.  更新完成後，關閉更新程式並重新執行 `bot_open_GUI_v3.py`。
+4.  更新完成後，關閉更新程式並重新執行 `bot_GUI.py`。
 
 ## 📜 檔案結構說明
 
@@ -91,8 +91,3 @@
 3.  提交你的變更 (`git commit -m 'Add some AmazingFeature'`)
 4.  推送到分支 (`git push origin feature/AmazingFeature`)
 5.  開啟一個 Pull Request
-
-## 📄 授權
-
-本專案採用 MIT 授權。詳情請見 `LICENSE` 檔案。
-<!-- 如果你沒有 LICENSE 檔案，可以移除這行 -->
