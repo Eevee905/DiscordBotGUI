@@ -45,7 +45,7 @@
     > ```
 
 3.  **設定 Bot Token**
-    *   首次執行 `bot_open_GUI_v3.py`，程式會提示你設定 Bot Token。
+    *   首次執行 `bot_GUI.py`，程式會提示你設定 Bot Token。
     *   點擊功能表列的 `設置` -> `首選項`。
     *   在「機器人Token」欄位中，貼上你的 Discord Bot Token。
     *   點擊「保存」並重新啟動程式。
