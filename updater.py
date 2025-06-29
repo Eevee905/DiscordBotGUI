@@ -17,8 +17,8 @@ GITHUB_REPO = "DiscordBotGUI"
 BRANCH_NAME = "main"
 
 # GitHub Raw 內容的基礎 URL
-# GITHUB_REPO_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/{BRANCH_NAME}/"
-GITHUB_REPO_URL = f"https://github.com/{GITHUB_USER}/{GITHUB_REPO}/tree/{BRANCH_NAME}/"
+GITHUB_REPO_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/{BRANCH_NAME}/"
+# GITHUB_REPO_URL = f"https://github.com/{GITHUB_USER}/{GITHUB_REPO}/tree/{BRANCH_NAME}/"
 
 VERSION_FILE = "version.info"
 MANIFEST_FILE = "manifest.json"
