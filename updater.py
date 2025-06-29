@@ -11,8 +11,8 @@ from datetime import datetime
 
 # --- 設定 ---
 # 替換成你自己的 GitHub 用戶名和儲存庫名稱
-GITHUB_USER = "YourGitHubUsername"
-GITHUB_REPO = "YourGitHubRepoName"
+GITHUB_USER = "Eevee905"
+GITHUB_REPO = "DiscordBotGUI"
 # 通常使用 main 或 master 分支
 BRANCH_NAME = "main"
 
