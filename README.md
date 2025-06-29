@@ -1,6 +1,7 @@
 # Discord機器人專用 GUI 管理工具
 
-![GUI預覽圖](https://via.placeholder.com/800x450.png?text=在這裡放一張你的程式預覽圖)
+<!-- ![GUI預覽圖](https://via.placeholder.com/800x450.png?text=在這裡放一張你的程式預覽圖) -->
+![GUI預覽圖](https://media.discordapp.net/attachments/1366680361895202879/1388287232275648622/image.png?ex=6861c03d&is=68606ebd&hm=f93f7756fead1bec291e8945c07903c10601312839866c3f1a19234ddcd1ce94&=&quality=lossless)
 <!-- [請修改] 將上面的 URL 換成你程式的實際預覽圖。你可以將圖片上傳到 GitHub issue，然後複製圖片連結來使用 -->
 
 這是一款使用 Python 和 Tkinter (ttkbootstrap) 開發的 Discord 圖形化介面管理工具。它允許使用者透過直觀的 GUI 介面來瀏覽伺服器、頻道、成員，並進行訊息收發、建立邀請等操作。
