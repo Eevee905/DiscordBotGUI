@@ -1,4 +1,4 @@
-# 伊布7專用 GUI 管理工具
+# Discord機器人專用 GUI 管理工具
 
 ![GUI預覽圖](https://via.placeholder.com/800x450.png?text=在這裡放一張你的程式預覽圖)
 <!-- [請修改] 將上面的 URL 換成你程式的實際預覽圖。你可以將圖片上傳到 GitHub issue，然後複製圖片連結來使用 -->
