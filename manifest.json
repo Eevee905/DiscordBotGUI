@@ -1,0 +1,21 @@
+{
+    "files": [
+        "README.md",
+        "bot_GUI.py",
+        "icons/copy.png",
+        "icons/eye.png",
+        "icons/info.png",
+        "icons/log-in.png",
+        "icons/message-square.png",
+        "icons/paperclip.png",
+        "icons/plus-square.png",
+        "icons/refresh-cw.png",
+        "icons/send.png",
+        "icons/settings.png",
+        "prepare_upload.bat",
+        "requirements.txt",
+        "version.info",
+        "新文字文件.txt",
+        "準備上傳檔案.txt"
+    ]
+}
