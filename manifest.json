@@ -12,7 +12,6 @@
         "icons/refresh-cw.png",
         "icons/send.png",
         "icons/settings.png",
-        "prepare_upload.bat",
         "requirements.txt",
         "version.info"
     ]
