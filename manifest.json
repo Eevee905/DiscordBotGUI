@@ -13,6 +13,7 @@
         "icons/send.png",
         "icons/settings.png",
         "requirements.txt",
-        "version.info"
+        "version.info",
+        "更新日誌.txt"
     ]
 }
