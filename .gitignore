@@ -1,5 +1,6 @@
 discord_gui_config.json
 create_manifest.py
 prepare_upload.bat
+updater_config.json
 __pycache__/
 *.pyc
