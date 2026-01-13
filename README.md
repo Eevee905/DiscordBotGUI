@@ -32,8 +32,8 @@
 1.  **下載專案**
     點擊此頁面右上角的 `Code` -> `Download ZIP`，或使用 Git clone：
     ```bash
-    git clone https://github.com/[請修改-你的GitHub使用者名稱]/[請修改-你的專案名稱].git
-    cd [請修改-你的專案名稱]
+    git clone https://github.com/Eevee905/DiscordBotGUI.git
+    cd DiscordBotGUI
     ```
 
 2.  **安裝依賴庫**
