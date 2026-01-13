@@ -53,7 +53,7 @@
     *   如果是第一次使用 Discord 機器人，請先到[Discord 開發者網站](https://discord.com/developers/applications/)創建機器人並取得機器人的 Token
     *   在「機器人Token」欄位中，貼上你的 Discord Bot Token。
     *   點擊「保存」並重新啟動程式。
-    >   最後別忘記把機器人邀請到群裡喔!
+    >   小提醒：最後別忘記把機器人邀請到群裡喔!
 
     > **重要**：你的 Bot Token 會被儲存在本地的 `discord_gui_config.json` 檔案中，請妥善保管此檔案，不要洩漏給他人。
 
