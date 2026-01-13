@@ -20,6 +20,9 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
 app = None
 
+with open("version.info", mode="r", encoding="ANSI") as ver:
+    version = ver.read()
+
 # --- 私訊視窗類別 (DMChatWindow) ---
 # 此類別的功能在上次修改後是正常的，保持不變
 class DMChatWindow(tk.Toplevel):
@@ -145,7 +148,7 @@ class DMChatWindow(tk.Toplevel):
 class ChannelViewer:
     def __init__(self, master):
         self.master = master
-        self.master.title("Discord機器人專用 GUI 管理工具 v3.0.1")
+        self.master.title(f"Discord機器人專用 GUI 管理工具 v{version}")
         self.master.geometry("1400x950")
         self.master.minsize(1200, 800)
 
