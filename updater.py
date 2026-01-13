@@ -154,8 +154,15 @@ class AppUpdater(ttk.Window):
 
     def _do_check_update(self):
         try:
-            # 這裡加入了 headers
-            response = requests.get(GITHUB_REPO_URL + VERSION_FILE, headers=self.get_headers(), timeout=10)
+            import time
+            timestamp = int(time.time())
+            url = f"{GITHUB_REPO_URL}{VERSION_FILE}?t={timestamp}"
+
+            # # 這裡加入了 headers
+            # response = requests.get(GITHUB_REPO_URL + VERSION_FILE, headers=self.get_headers(), timeout=10)
+            
+            # 這裡加入了 headers (和上面的 url)
+            response = requests.get(url, headers=self.get_headers(), timeout=10)
             
             if response.status_code == 200:
                 self.latest_version = response.text.strip()
