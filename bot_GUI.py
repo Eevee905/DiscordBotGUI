@@ -1124,7 +1124,7 @@ class ChannelViewer:
 
     def show_help(self): messagebox.showinfo("幫助", "功能正在逐步完善中。")
     def show_shortcuts(self): messagebox.showinfo("快捷鍵", "...")
-    def show_about(self): messagebox.showinfo("關於", "Discord GUI v3.1")
+    def show_about(self): messagebox.showinfo("關於", f"Discord GUI v{version}")
 
     def on_closing(self):
         if messagebox.askokcancel("確認", "確定要關閉程式嗎?"):
