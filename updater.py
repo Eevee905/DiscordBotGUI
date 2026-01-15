@@ -158,11 +158,16 @@ class AppUpdater(ttk.Window):
             timestamp = int(time.time())
             url = f"{GITHUB_REPO_URL}{VERSION_FILE}?t={timestamp}"
 
-            # # 這裡加入了 headers
-            # response = requests.get(GITHUB_REPO_URL + VERSION_FILE, headers=self.get_headers(), timeout=10)
+            # 2. 【新增】準備標頭 (這是新的猛藥)
+            headers = self.get_headers() # 這是原本獲取 Token 的部分
+            
+            # 強制禁止快取的 HTTP 指令
+            headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            headers["Pragma"] = "no-cache"
+            headers["Expires"] = "0"
             
             # 這裡加入了 headers (和上面的 url)
-            response = requests.get(url, headers=self.get_headers(), timeout=10)
+            response = requests.get(url, headers=headers, timeout=10)
             
             if response.status_code == 200:
                 self.latest_version = response.text.strip()
