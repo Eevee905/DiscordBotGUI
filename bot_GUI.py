@@ -15,6 +15,9 @@ import datetime
 import pytz
 from PIL import Image, ImageTk
 
+# import logging
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 # 全域變數
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -22,6 +25,8 @@ app = None
 
 with open("version.info", mode="r", encoding="ANSI") as ver:
     version = ver.read()
+
+RESTART_FLAG = False
 
 # --- 私訊視窗類別 (DMChatWindow) ---
 # 此類別的功能在上次修改後是正常的，保持不變
@@ -846,33 +851,103 @@ class ChannelViewer:
         )
         messagebox.showinfo(f"{member.display_name} 的資訊", info_text, parent=self.master)
 
+    # def filter_channels(self, *args): # 棄用
+    #     search_term = self.search_var.get().lower()
+    #     if not self.current_selected_guild: return
+        
+    #     # Detach all items first to avoid visual glitches
+    #     all_items = list(self.channel_tree.get_children(''))
+    #     for item in all_items:
+    #         self.channel_tree.detach(item)
+
+    #     # Re-attach items that match
+    #     for item in all_items:
+    #         # If the item is a category (has children)
+    #         if self.channel_tree.get_children(item):
+    #             category_text = self.channel_tree.item(item, "text").lower()
+    #             child_visible = False
+    #             for child_item in self.channel_tree.get_children(item):
+    #                 child_text = self.channel_tree.item(child_item, "text").lower()
+    #                 if search_term in child_text:
+    #                     child_visible = True
+    #                     break # Found one visible child, so category is visible
+    #             if search_term in category_text or child_visible:
+    #                 self.channel_tree.move(item, '', 'end')
+    #         # If the item is a channel (no children) and not in a category
+    #         else:
+    #             channel_text = self.channel_tree.item(item, "text").lower()
+    #             if search_term in channel_text:
+    #                 self.channel_tree.move(item, '', 'end')
+
     def filter_channels(self, *args):
         search_term = self.search_var.get().lower()
         if not self.current_selected_guild: return
         
-        # Detach all items first to avoid visual glitches
-        all_items = list(self.channel_tree.get_children(''))
-        for item in all_items:
+        # 1. 先將所有項目從視圖中移除 (Detach)
+        # 注意：get_children('') 只有根目錄 (類別)，get_children(item) 才是子頻道
+        # 我們需要遍歷所有已知的 ID (從 mapping 中或是遍歷樹)
+        
+        # 簡單做法：先清空，再重新插入
+        # 但為了效能和保持展開狀態，我們操作 detach/move
+        
+        # 先把所有根節點 (類別) 隱藏
+        root_items = list(self.channel_tree.get_children(''))
+        for item in root_items:
             self.channel_tree.detach(item)
+            
+        # 如果沒有搜尋詞，全部還原
+        if not search_term:
+            for item in root_items:
+                self.channel_tree.move(item, '', 'end')
+                # 確保子項目也掛載好 (如果之前被 detach 過)
+                # 這裡假設原始結構沒有被打亂，僅僅是 detach root item
+                # 但如果要過濾子項目，邏輯會變複雜，建議直接「重繪」比較穩
+            return
 
-        # Re-attach items that match
-        for item in all_items:
-            # If the item is a category (has children)
-            if self.channel_tree.get_children(item):
-                category_text = self.channel_tree.item(item, "text").lower()
-                child_visible = False
-                for child_item in self.channel_tree.get_children(item):
-                    child_text = self.channel_tree.item(child_item, "text").lower()
-                    if search_term in child_text:
-                        child_visible = True
-                        break # Found one visible child, so category is visible
-                if search_term in category_text or child_visible:
-                    self.channel_tree.move(item, '', 'end')
-            # If the item is a channel (no children) and not in a category
-            else:
-                channel_text = self.channel_tree.item(item, "text").lower()
-                if search_term in channel_text:
-                    self.channel_tree.move(item, '', 'end')
+        # 搜尋邏輯：重繪法 (最穩健)
+        # 利用既有的 channel_id_mapping 或重新遍歷 guild channels
+        self.show_filtered_channels(self.current_selected_guild, search_term)
+
+    def show_filtered_channels(self, guild, search_term):
+        # 這是修改 show_channels_for_guild 來支援過濾
+        # 清空樹
+        for item in self.channel_tree.get_children():
+            self.channel_tree.delete(item)
+        self.channel_id_mapping.clear()
+
+        categories = {}
+        uncategorized = []
+
+        # 分類邏輯
+        for channel in guild.text_channels:
+            # 檢查頻道名是否符合
+            match_channel = search_term in channel.name.lower()
+            # 檢查類別名是否符合
+            match_category = channel.category and (search_term in channel.category.name.lower())
+            
+            # 如果搜尋詞為空，或 頻道名符合 或 類別名符合 -> 加入顯示清單
+            if not search_term or match_channel or match_category:
+                if channel.category:
+                    cat_name = channel.category.name
+                    if cat_name not in categories:
+                        categories[cat_name] = []
+                    categories[cat_name].append(channel)
+                else:
+                    uncategorized.append(channel)
+
+        # 繪製樹
+        for cat_name, channels in sorted(categories.items()):
+            # 建立類別節點
+            parent_id = self.channel_tree.insert("", tk.END, text=f"📁 {cat_name}", open=True)
+            for channel in sorted(channels, key=lambda c: c.position):
+                item_id = self.channel_tree.insert(parent_id, tk.END, text=f" # {channel.name}")
+                self.channel_id_mapping[item_id] = channel.id
+        
+        if uncategorized:
+            parent_id = self.channel_tree.insert("", tk.END, text="📁 未分類", open=True)
+            for channel in sorted(uncategorized, key=lambda c: c.position):
+                item_id = self.channel_tree.insert(parent_id, tk.END, text=f" # {channel.name}")
+                self.channel_id_mapping[item_id] = channel.id
 
     # def toggle_auto_update(self):
     #     state = "啟用" if self.auto_update_var.get() else "停用"
@@ -1111,12 +1186,21 @@ class ChannelViewer:
                 self.view_channel()
             self.log_message("已刷新所有內容")
 
+    # def reconnect_bot(self): # 棄用
+    #     self.status_text.set("正在重新連接...")
+    #     self.log_message("請求重新連接機器人...")
+    #     asyncio.run_coroutine_threadsafe(bot.close(), bot.loop)
+    #     asyncio.run_coroutine_threadsafe(bot.start(self.config.get("bot_token")), bot.loop)
+    #     # self.status_text.set("重新連接成功!")
+
     def reconnect_bot(self):
-        self.status_text.set("正在重新連接...")
-        self.log_message("請求重新連接機器人...")
+        if not messagebox.askyesno("確認", "這將會完全斷開並重新登錄機器人，確定嗎？"):
+            return
+        
+        global RESTART_FLAG
+        RESTART_FLAG = True # 告訴線程要重啟，不要退出
         asyncio.run_coroutine_threadsafe(bot.close(), bot.loop)
-        asyncio.run_coroutine_threadsafe(bot.start(self.config.get("bot_token")), bot.loop)
-        # self.status_text.set("重新連接成功!")
+        self.status_text.set("正在重啟連線...")
 
     def update_time(self):
         self.time_label.config(text=datetime.datetime.now().strftime("%H:%M:%S"))
@@ -1135,15 +1219,32 @@ class ChannelViewer:
             self.master.destroy()
 
 # --- Bot 事件處理 ---
+# @bot.event
+# async def on_ready():
+#     print(f"機器人已登錄: {bot.user.name}")
+#     if app:
+#         app.master.after(0, lambda: app.status_indicator.config(bootstyle="success"))
+#         app.master.after(0, lambda: app.status_label.config(text="已連接"))
+#         app.master.after(0, lambda: app.status_text.set(f"已連接到 {len(bot.guilds)} 個服務器"))
+#         app.master.after(0, app.refresh_all)
+#         app.master.after(0, lambda: app.log_message(f"機器人已登錄: {bot.user.name}"))
+
 @bot.event
 async def on_ready():
-    print(f"機器人已登錄: {bot.user.name}")
+    # 強制將訊息印出到終端機，不經過緩衝
+    print(f"--- 偵測到登錄動作 ---", flush=True)
+    print(f"機器人帳號: {bot.user.name}", flush=True)
+    print(f"伺服器數量: {len(bot.guilds)}", flush=True)
+    
     if app:
+        print("正在同步 GUI 狀態...", flush=True)
         app.master.after(0, lambda: app.status_indicator.config(bootstyle="success"))
         app.master.after(0, lambda: app.status_label.config(text="已連接"))
-        app.master.after(0, lambda: app.status_text.set(f"已連接到 {len(bot.guilds)} 個服務器"))
+        app.master.after(0, lambda: app.status_text.set(f"已連接到 {len(bot.guilds)} 個伺服器"))
         app.master.after(0, app.refresh_all)
         app.master.after(0, lambda: app.log_message(f"機器人已登錄: {bot.user.name}"))
+    else:
+        print("警告: GUI 物件 (app) 尚未就緒", flush=True)
 
 @bot.event
 async def on_message(message):
@@ -1184,6 +1285,26 @@ def start_bot(token):
 def run_bot_in_thread():
     token = app.config.get("bot_token")
     threading.Thread(target=start_bot, args=(token,), daemon=True).start()
+
+def run_bot_thread(token):
+    global RESTART_FLAG
+    # 不需要手動 new_event_loop，讓 bot.run 自己處理最穩定
+    while True:
+        try:
+            print(f"[系統] 嘗試啟動機器人...", flush=True)
+            # 使用 bot.run 雖然會阻塞線程，但它在 Thread 裡跑是安全的
+            bot.run(token) 
+        except Exception as e:
+            print(f"[錯誤] 機器人連線中斷: {e}", flush=True)
+        
+        # 檢查是否是被手動觸發重連
+        if not RESTART_FLAG:
+            break
+            
+        print("[系統] 正在重新啟動...", flush=True)
+        RESTART_FLAG = False
+        import time
+        time.sleep(2)
     
 if __name__ == "__main__":
     # 從設定檔讀取主題
@@ -1202,14 +1323,19 @@ if __name__ == "__main__":
     root.bind('<F5>', lambda e: app.refresh_all())
     root.bind('<Control-q>', lambda e: app.on_closing())
     
-    if app.config.get("bot_token"):
-        # 在新的事件循環中啟動機器人執行緒
-        threading.Thread(target=bot.run, args=(app.config.get("bot_token"),), daemon=True).start()
+    # if app.config.get("bot_token"):
+    #     # 在新的事件循環中啟動機器人執行緒
+    #     threading.Thread(target=bot.run, args=(app.config.get("bot_token"),), daemon=True).start()
     
-    if app.config.get("window_geometry"):
-        try:
-            root.geometry(app.config["window_geometry"])
-        except:
-            pass
+    # if app.config.get("window_geometry"):
+    #     try:
+    #         root.geometry(app.config["window_geometry"])
+    #     except:
+    #         pass
+
+    if app.config.get("bot_token"):
+        # 啟動守護線程
+        bot_thread = threading.Thread(target=run_bot_thread, args=(app.config.get("bot_token"),), daemon=True)
+        bot_thread.start()
     
     root.mainloop()
