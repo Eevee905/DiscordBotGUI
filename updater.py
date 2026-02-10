@@ -50,6 +50,16 @@ class AppUpdater(ttk.Window):
                 return f.read().strip()
         except FileNotFoundError:
             return "0.0.0"
+        
+    def is_newer_version(self, remote_ver, local_ver):
+        try:
+            # 將 "1.2.3" 拆解為 [1, 2, 3] 數字列表
+            remote_parts = [int(x) for x in remote_ver.split('.')]
+            local_parts = [int(x) for x in local_ver.split('.')]
+            return remote_parts > local_parts
+        except ValueError:
+            # 如果版本號格式不對 (例如包含字母)，回退到字串比較或報錯
+            return remote_ver > local_ver
 
     def load_config(self):
         """載入設定檔 (讀取 Token)"""
@@ -174,7 +184,8 @@ class AppUpdater(ttk.Window):
                 self.after(0, lambda: self.latest_version_label.config(text=self.latest_version, bootstyle=SUCCESS))
                 self.after(0, lambda: self.log(f"取得最新版本號: {self.latest_version}"))
 
-                if self.latest_version > self.current_version:
+                # if self.latest_version > self.current_version:
+                if self.is_newer_version(self.latest_version, self.current_version):
                     self.after(0, lambda: self.status_label.config(text="發現新版本！請點擊「立即更新」。", bootstyle=WARNING))
                     self.after(0, lambda: self.update_button.config(state=NORMAL))
                     self.after(0, lambda: self.log("版本過舊，建議更新。"))
