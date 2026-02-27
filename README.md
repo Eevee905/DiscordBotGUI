@@ -25,7 +25,7 @@
 
 ### 環境需求
 
-*   Python 3.8 或更高版本[點我下載 Python](https://www.python.org/ftp/python/3.10.2/python-3.10.2-amd64.exe)
+*   Python 3.8 或更高版本[點我下載 Python 3.8.2](https://www.python.org/ftp/python/3.8.2/python-3.8.2-amd64.exe)
 
 ### 安裝步驟
 
